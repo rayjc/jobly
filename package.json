@@ -1,0 +1,21 @@
+{
+  "name": "express-jobly",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "test": "jest",
+    "start": "node server.js"
+  },
+  "keywords": [],
+  "author": "Ray",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.17.1",
+    "morgan": "^1.10.0",
+    "pg": "^8.2.1"
+  },
+  "devDependencies": {
+    "supertest": "^4.0.2"
+  }
+}
