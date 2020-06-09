@@ -10,18 +10,30 @@ const db = require("../../db");
 describe("Companies routes test", function() {
 
   let company;
+  let job;
 
   beforeEach(async function() {
+    await db.query(`DELETE FROM jobs`);
     await db.query(`DELETE FROM companies`);
 
-    const result = await db.query(
+    const companyResult = await db.query(
       `INSERT INTO companies (handle, name, num_employees, description, logo_url)
           VALUES ($1, $2, $3, $4, $5)
           RETURNING handle, name, num_employees, description, logo_url`,
       ["test", "Test Company", 100, "Just a imaginary company.", "http://www.google.com"]
     );
 
-    company = result.rows[0];
+    company = companyResult.rows[0];
+
+    const jobResult = await db.query(
+      `INSERT INTO jobs (title, salary, equity, date_posted, company_handle)
+        VALUES ($1, $2, $3, $4, $5)
+        RETURNING id, title, salary, equity, date_posted, company_handle`,
+      ["Test Title", 100000, 0.5, "2018-10-10", "test"]
+    );
+
+    job = jobResult.rows[0];
+
   });
 
   afterAll(async function() {
@@ -41,6 +53,8 @@ describe("Companies routes test", function() {
       const res = await request(app).get(`/companies/${company.handle}`);
 
       expect(res.statusCode).toBe(200);
+      job.date_posted = expect.any(String);
+      company.jobs = [job];
       expect(res.body).toEqual({ company });
     });
 
@@ -59,9 +73,9 @@ describe("Companies routes test", function() {
       const res = await request(app).post("/companies").send(company);
 
       expect(res.statusCode).toBe(201);
-      expect(res.body).toEqual(
-        (await request(app).get(`/companies/${company.handle}`)).body
-      );
+      const dbResult = (await request(app).get(`/companies/${company.handle}`)).body;
+      delete dbResult.company.jobs;  // GET /:handle returns an array of jobs as well
+      expect(res.body).toEqual(dbResult);
     });
 
     test("fails to create company with duplicate handle (PK) and returns 403", async function() {
@@ -132,9 +146,9 @@ describe("Companies routes test", function() {
 
       expect(res.status).toBe(200);
       expect(res.body.company).toEqual(company);
-      expect(res.body).toEqual(
-        (await request(app).get(`/companies/${company.handle}`)).body
-      );
+      const dbResult = (await request(app).get(`/companies/${company.handle}`)).body;
+      delete dbResult.company.jobs;  // GET /:handle returns an array of jobs as well
+      expect(res.body).toEqual(dbResult);
     });
 
     test("fails to update a non-existing book and returns 404", async function() {

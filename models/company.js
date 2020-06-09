@@ -16,9 +16,10 @@ class Company {
   static async get(handle, isDetail = false) {
     const result = (isDetail)
       ? await db.query(
-        `SELECT handle, name, num_employees, description, logo_url, json_agg(jobs.*) AS jobs
+        `SELECT handle, name, num_employees, description,logo_url,
+          COALESCE(JSON_AGG(jobs) FILTER (WHERE jobs.company_handle IS NOT NULL), '[]') AS jobs
           FROM companies
-          JOIN jobs ON companies.handle=jobs.company_handle
+          LEFT JOIN jobs ON companies.handle=jobs.company_handle
           WHERE companies.handle=$1
           GROUP BY companies.handle`,
         [handle]
