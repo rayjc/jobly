@@ -204,7 +204,7 @@ describe("Companies routes test", function() {
     });
 
     test("fails to remove a non-existing book and returns 404", async function() {
-      const res = await request(app).delete(`/companies/${company.hanlde}-dne`);
+      const res = await request(app).delete(`/companies/${company.handle}-dne`);
 
       expect(res.status).toBe(404);
     });

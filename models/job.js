@@ -40,7 +40,7 @@ class Job {
     }
     // return condensed Job instance early
     if (!isDetail) {
-      return new Job(id, ...Object.values(jobResult.rows[0]));
+      return new Job(+id, ...Object.values(jobResult.rows[0]));
     }
 
 
@@ -56,7 +56,7 @@ class Job {
     const c = companyResult.rows[0];
     const { title, salary, equity, date_posted } = j;
 
-    return { id, title, salary, equity, date_posted, company: c };
+    return { id: +id, title, salary, equity, date_posted, company: c };
   }
 
   /**
