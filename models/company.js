@@ -118,7 +118,7 @@ class Company {
       );
 
       if (result.rows.length === 0) {
-        throw new ExpressError(`Cannot find ${handle}`, 404);
+        throw new ExpressError(`Cannot find ${this.handle}`, 404);
       }
 
       return new Company(...Object.values(result.rows[0]));
