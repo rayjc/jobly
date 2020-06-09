@@ -13,20 +13,29 @@ class Company {
   /**
    * Get a company by handle(PK);
    * returns Company */
-  static async get(handle) {
-    const result = await db.query(
-      `SELECT handle, name, num_employees, description, logo_url
-        FROM companies
-        WHERE handle=$1`,
-      [handle]
-    );
+  static async get(handle, isDetail = false) {
+    const result = (isDetail)
+      ? await db.query(
+        `SELECT handle, name, num_employees, description, logo_url, json_agg(jobs.*) AS jobs
+          FROM companies
+          JOIN jobs ON companies.handle=jobs.company_handle
+          WHERE companies.handle=$1
+          GROUP BY companies.handle`,
+        [handle]
+      )
+      : await db.query(
+        `SELECT handle, name, num_employees, description, logo_url
+          FROM companies
+          WHERE handle=$1`,
+        [handle]
+      );
 
     if (result.rows.length === 0) {
       throw new ExpressError(`Cannot find ${handle}.`, 404);
     }
 
     const c = result.rows[0];
-    return new Company(c.handle, c.name, c.num_employees, c.description, c.logo_url);
+    return (isDetail) ? c : new Company(...Object.values(c));
   }
 
   /**

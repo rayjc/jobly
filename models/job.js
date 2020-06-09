@@ -27,7 +27,7 @@ class Job {
   /**
    * Get a job by id;
    * returns {<id>, <title>, <salary>, <equity>, <date_posted>, <company>} */
-  static async get(id, isDetail = true) {
+  static async get(id, isDetail = false) {
     // query job row
     const jobResult = await db.query(
       `SELECT title, salary, equity, date_posted, company_handle FROM jobs

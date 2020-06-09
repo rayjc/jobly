@@ -26,7 +26,7 @@ router.get("/", async (req, res, next) => {
 router.get("/:id", async (req, res, next) => {
   try {
     const { id } = req.params;
-    const job = await Job.get(id);
+    const job = await Job.get(id, true);
 
     return res.json({ job });
 
@@ -58,7 +58,7 @@ router.patch("/:id", async (req, res, next) => {
       throw new ExpressError("Missing 'id' in URL", 400);
     }
     // get job instance from db
-    const job = await Job.get(id, false);
+    const job = await Job.get(id);
     // validate and modify job instance
     validateJSON(req.body, jobPatchSchema);
     const fields = ["title", "salary", "equity", "date_posted", "company_handle"];
@@ -84,7 +84,7 @@ router.delete("/:id", async (req, res, next) => {
       throw new ExpressError("Missing 'id' in URL", 400);
     }
 
-    const job = await Job.get(id, false);
+    const job = await Job.get(id);
     await job.delete();
 
     return res.json({ message: `Job(${id}) deleted` });
