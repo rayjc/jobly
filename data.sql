@@ -1,5 +1,6 @@
 DROP TABLE IF EXISTS jobs;
 DROP TABLE IF EXISTS companies;
+DROP TABLE IF EXISTS users;
 
 CREATE TABLE companies (
     handle text PRIMARY KEY,
@@ -18,6 +19,16 @@ CREATE TABLE jobs (
     company_handle text NOT NULL REFERENCES companies ON DELETE CASCADE
 );
 
+CREATE TABLE users (
+    username text PRIMARY KEY,
+    password text NOT NULL,
+    first_name text NOT NULL,
+    last_name text NOT NULL,
+    email text NOT NULL UNIQUE,
+    photo_url text,
+    is_admin boolean NOT NULL DEFAULT FALSE
+);
+
 
 -- companies
 INSERT INTO companies (handle, name, num_employees, description, logo_url)
@@ -31,3 +42,8 @@ INSERT INTO jobs (title, salary, equity, company_handle)
     VALUES ('Software Engineer II', 200000.0, 0.0002, 'goog');
 INSERT INTO jobs (title, salary, equity, company_handle)
     VALUES ('Software Engineer I', 150000.0, 0.0002, 'appl');
+-- users
+INSERT INTO users (username, password, first_name, last_name, email, photo_url)
+    VALUES ('testuser', 'raw_password', 'Test', 'User', 'test@test.com', 'http://www.google.com');
+INSERT INTO users (username, password, first_name, last_name, email, photo_url, is_admin)
+    VALUES ('testadmin', 'raw_password', 'Test', 'Adim', 'admin@test.com', 'http://www.google.com', TRUE);
