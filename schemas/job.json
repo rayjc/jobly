@@ -68,6 +68,7 @@
         "company_handle": {
             "$id": "#/properties/company_handle",
             "type": "string",
+            "maxLength": 32,
             "title": "The company_handle schema",
             "description": "An explanation about the purpose of this instance.",
             "default": "",
