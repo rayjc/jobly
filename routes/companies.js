@@ -1,5 +1,4 @@
 const express = require("express");
-const jsonschema = require("jsonschema");
 
 const Company = require("../models/company");
 const companySchema = require("../schemas/company.json");
