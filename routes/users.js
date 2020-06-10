@@ -1,10 +1,12 @@
 const express = require("express");
+const jwt = require("jsonwebtoken");
 
 const User = require("../models/user");
 const userSchema = require("../schemas/user.json");
 const userPatchSchema = require("../schemas/userPatch.json");
 const ExpressError = require("../helpers/expressError");
 const { validateJSON } = require("../helpers/util");
+const { SECRET_KEY } = require("../config");
 
 const router = new express.Router();
 
@@ -50,7 +52,9 @@ router.post("/", async (req, res, next) => {
     );
 
     const { password: hashedPassword, ...user } = detailedUser;
-    return res.status(201).json({ user });
+    const payload = { username: user.username, is_admin: user.is_admin };
+
+    return res.status(201).json({ user, token: jwt.sign(payload, SECRET_KEY) });
 
   } catch (error) {
     return next(error);
