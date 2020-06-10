@@ -5,9 +5,12 @@ const Job = require("../models/job");
 const jobSchema = require("../schemas/job.json");
 const jobPatchSchema = require("../schemas/jobPatch.json");
 const ExpressError = require("../helpers/expressError");
+const { ensureAdmin, ensureLoggedIn } = require("../middleware/auth");
 const { validateJSON } = require("../helpers/util");
 
 const router = new express.Router();
+// requires logged in for all routes
+router.use(ensureLoggedIn);
 
 
 router.get("/", async (req, res, next) => {
@@ -36,7 +39,7 @@ router.get("/:id", async (req, res, next) => {
 });
 
 
-router.post("/", async (req, res, next) => {
+router.post("/", ensureAdmin, async (req, res, next) => {
   try {
     validateJSON(req.body, jobSchema);
 
@@ -51,7 +54,7 @@ router.post("/", async (req, res, next) => {
 });
 
 
-router.patch("/:id", async (req, res, next) => {
+router.patch("/:id", ensureAdmin, async (req, res, next) => {
   try {
     const { id } = req.params;
     if (id === undefined) {
@@ -77,7 +80,7 @@ router.patch("/:id", async (req, res, next) => {
 });
 
 
-router.delete("/:id", async (req, res, next) => {
+router.delete("/:id", ensureAdmin, async (req, res, next) => {
   try {
     const { id } = req.params;
     if (id === undefined) {

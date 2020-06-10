@@ -4,9 +4,12 @@ const Company = require("../models/company");
 const companySchema = require("../schemas/company.json");
 const companyPatchSchema = require("../schemas/companyPatch.json");
 const ExpressError = require("../helpers/expressError");
+const { ensureAdmin, ensureLoggedIn } = require("../middleware/auth");
 const { validateJSON } = require("../helpers/util");
 
 const router = new express.Router();
+// requires logged in for all routes
+router.use(ensureLoggedIn);
 
 
 router.get("/", async (req, res, next) => {
@@ -35,7 +38,7 @@ router.get("/:handle", async (req, res, next) => {
 });
 
 
-router.post("/", async (req, res, next) => {
+router.post("/", ensureAdmin, async (req, res, next) => {
   try {
     validateJSON(req.body, companySchema);
 
@@ -49,7 +52,7 @@ router.post("/", async (req, res, next) => {
 });
 
 
-router.patch("/:handle", async (req, res, next) => {
+router.patch("/:handle", ensureAdmin, async (req, res, next) => {
   try {
     const { handle } = req.params;
     if (handle === undefined) {
@@ -75,7 +78,7 @@ router.patch("/:handle", async (req, res, next) => {
 });
 
 
-router.delete("/:handle", async (req, res, next) => {
+router.delete("/:handle", ensureAdmin, async (req, res, next) => {
   try {
     const { handle } = req.params;
     if (handle === undefined) {

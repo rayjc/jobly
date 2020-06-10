@@ -9,6 +9,7 @@ const loginRoutes = require("./routes/login");
 const jobsRoutes = require("./routes/jobs");
 const usersRoutes = require("./routes/users");
 const ExpressError = require("./helpers/expressError");
+const { authenticateJWT } = require("./middleware/auth");
 
 const app = express();
 
@@ -16,6 +17,9 @@ app.use(express.json());
 
 // add logging system
 app.use(morgan("tiny"));
+
+// get jwt auth token for all routes
+app.use(authenticateJWT);
 
 
 /* set up routes */
@@ -26,7 +30,6 @@ app.use("/users", usersRoutes);
 
 
 /** 404 handler */
-
 app.use(function(req, res, next) {
   const err = new ExpressError("Not Found", 404);
 
@@ -34,8 +37,8 @@ app.use(function(req, res, next) {
   return next(err);
 });
 
-/** general error handler */
 
+/** general error handler */
 app.use(function(err, req, res, next) {
   res.status(err.status || 500);
   console.error(err.stack);

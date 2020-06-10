@@ -24,7 +24,7 @@ router.post("/", async (req, res, next) => {
       const user = await User.get(username);
 
       const payload = { username, is_admin: user.is_admin };
-      return res.json({ token: jwt.sign(payload, SECRET_KEY) });
+      return res.json({ token: jwt.sign(payload, SECRET_KEY, { expiresIn: "1d" }) });
     }
 
     return next(new ExpressError("Invalid username/password", 401));

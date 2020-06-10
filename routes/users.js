@@ -5,6 +5,7 @@ const User = require("../models/user");
 const userSchema = require("../schemas/user.json");
 const userPatchSchema = require("../schemas/userPatch.json");
 const ExpressError = require("../helpers/expressError");
+const { ensureCorrectUser, ensureLoggedIn } = require("../middleware/auth");
 const { validateJSON } = require("../helpers/util");
 const { SECRET_KEY } = require("../config");
 
@@ -54,7 +55,7 @@ router.post("/", async (req, res, next) => {
     const { password: hashedPassword, ...user } = detailedUser;
     const payload = { username: user.username, is_admin: user.is_admin };
 
-    return res.status(201).json({ user, token: jwt.sign(payload, SECRET_KEY) });
+    return res.status(201).json({ user, token: jwt.sign(payload, SECRET_KEY, { expiresIn: "1d" }) });
 
   } catch (error) {
     return next(error);
@@ -62,13 +63,13 @@ router.post("/", async (req, res, next) => {
 });
 
 
-router.patch("/:username", async (req, res, next) => {
+router.patch("/:username", ensureLoggedIn, ensureCorrectUser, async (req, res, next) => {
   try {
     // get user instance from db
     const detailedUser = await User.get(req.params.username);
     //validte and update user instance
     validateJSON(req.body, userPatchSchema);
-    const fields = ["first_name", "last_name", "email", "photo_url", "is_admin"];
+    const fields = ["first_name", "last_name", "email", "photo_url"];
     fields.forEach(function(field) {
       if (field in req.body) {
         detailedUser[field] = req.body[field];
@@ -86,7 +87,7 @@ router.patch("/:username", async (req, res, next) => {
 });
 
 
-router.delete("/:username", async (req, res, next) => {
+router.delete("/:username", ensureLoggedIn, ensureCorrectUser, async (req, res, next) => {
   try {
     const username = req.params.username;
     const user = await User.get(username);
