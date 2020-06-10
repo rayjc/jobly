@@ -62,7 +62,6 @@ router.patch("/:username", async (req, res, next) => {
   try {
     // get user instance from db
     const detailedUser = await User.get(req.params.username);
-    console.log(detailedUser);
     //validte and update user instance
     validateJSON(req.body, userPatchSchema);
     const fields = ["first_name", "last_name", "email", "photo_url", "is_admin"];
