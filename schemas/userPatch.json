@@ -15,7 +15,7 @@
         }
     ],
     "required": [],
-    "additionalProperties": false,
+    "additionalProperties": true,
     "minProperties": 1,
     "properties": {
         "first_name": {
