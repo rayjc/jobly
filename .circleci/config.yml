@@ -4,4 +4,13 @@ orbs:
 workflows:
   node-tests:
     jobs:
-      - node/test
+      - build
+
+jobs:
+  build:
+    steps:
+      - checkout
+      - node/with-cache:
+          steps:
+            - run: npm install
+      - run: npm run test
